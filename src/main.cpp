@@ -1,24 +1,45 @@
 #include <BearLibTerminal.h>
-#include "cpp/Controls.cpp"
-#include "cpp/Person.cpp"
+
+#include "Player.h"
+#include "Controls.h"
+#include "Interface.h"
+#include "Pointer.h"
+#include "MathUtil.h"
 
 int main() {
-  terminal_open();
-  terminal_set("window: size=80x25, title: 'Rogalik'");
+    terminal_open();
 
-  Controls keyboard;
-  Person person(keyboard);
-  person.updatePlayer();
+    Window window;
+    Player player;
+    Controls controls;
+    Interface interface(window, player, controls);
 
-  terminal_refresh();
+    terminal_refresh();
 
-  while (true) {
-      terminal_clear();
-      keyboard.inputEnter();
-      if(keyboard.isExit()) break;
-      person.updatePlayer();
-      terminal_refresh();
-  }
+    window.generateMoney();
+    window.drawMoney();
 
-  terminal_close();
+    player.drawPlayer();
+    player.showMoney();
+    player.showStep();
+
+    terminal_refresh();
+
+    while (true) {
+        terminal_clear();
+
+        controls.update();
+
+        if (controls.isExit()) break;
+
+        interface.movePlayer();
+        interface.collectMoney();
+
+        player.drawPlayer();
+        window.drawMoney();
+        player.showMoney();
+        player.showStep();
+
+        terminal_refresh();
+    }
 }
